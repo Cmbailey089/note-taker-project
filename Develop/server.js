@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const unid = require('./helper/uuid');
+let notes = require('./db/db.json')
 
 
 
@@ -22,35 +23,32 @@ app.get('*', (req,res) =>
 app.get('/', (req, res) =>
   res.sendFile(path.join(__dirname, './public/index.html')));
 
-app.get('/api/db/db.json', (req,res) => {
-  res.json('/api/db.db.json') 
+app.get('/api/notes', (req,res) => {
+  res.json('/api/notes') 
   console.info(`${req.method}`)
 });
 
-// POST request to add a review
-app.post('/api/db/db.json', (req, res) => {
-  // Log that a POST request was received
-  console.info();
-
-  // Destructuring assignment for the items in req.body
+app.post('/api/notes', (req, res) => {
+ 
+  console.info('duh');
   const { title,text } = req.body;
-
-  // If all the required properties are present
   if (title && text) {
-    // Variable for the object we will save
-    const newNotes = {
+   
+    let newNotes = {
       title,
       text,
       note_id: unid(),
   };
-  req.body.push(newNotes);
+  notes.push(newNotes);
 
-  fs.writeFile(path.join(__dirname, './db/db.json'),JSON.stringify(JSON.parse(data), null, 3),
-    (writeErr) =>
+  fs.appendFile(path.join(__dirname,'../Develop/db/db.json'),JSON.stringify((notes), null, 3),
+    (writeErr) =>{
       writeErr
         ? console.error(writeErr)
         : console.info('Successfully updated reviews!')
-  );
+
+        return res.json(notes);
+    });
 
    
   }});
